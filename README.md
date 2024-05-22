@@ -1,4 +1,4 @@
-# # Flappy-Bird
+## Flappy-Bird
 # Introduction :
 
 Full Name : Nguyễn Đức Hoan
