@@ -27,13 +27,13 @@ private:
     struct PipePair {
         SDL_Rect upperRect;
         SDL_Rect lowerRect;
-        bool passed; // Cờ để kiểm tra cặp ống đã được vượt qua hay chưa
+        bool passed;
     };
 
     std::vector<PipePair> pipes;
 
-    TTF_Font* gFont; // Font sử dụng để hiển thị văn bản
-    SDL_Texture* gTextTexture; // Texture cho văn bản
+    TTF_Font* gFont;
+    SDL_Texture* gTextTexture;
 
     SDL_Texture* playAgainTexture;
     SDL_Texture* quitTexture;
@@ -41,10 +41,9 @@ private:
     SDL_Rect playAgainRect;
     SDL_Rect quitRect;
 
-    int score; // Điểm số hiện tại
-    int highScore; // Kỷ lục
+    int score;
+    int highScore;
 
-   // enum GameState { RUNNING, GAME_OVER };
     GameState gameState;
 
     bool loadMedia();
@@ -58,8 +57,8 @@ private:
     void renderGameOverText();
     void showGameOverScreen();
     void showPauseScreen();
-    void updateScore(); // Cập nhật điểm số
-    void renderScore(); // Hiển thị điểm số
+    void updateScore();
+    void renderScore();
 };
 
 FlappyBird::FlappyBird() : gWindow(nullptr), gRenderer(nullptr), gBackgroundTexture(nullptr), gBirdTexture(nullptr), gPipeUpTexture(nullptr), gPipeDownTexture(nullptr), gFont(nullptr), gTextTexture(nullptr), gravity(2.5), quit(false), gameState(PAUSED), score(0), highScore(0) {
@@ -74,40 +73,34 @@ FlappyBird::~FlappyBird() {
 }
 
 bool FlappyBird::init() {
-    // Khởi tạo SDL
     if (SDL_Init(SDL_INIT_VIDEO) != 0) {
         std::cerr << "SDL initialization failed: " << SDL_GetError() << std::endl;
         return false;
     }
 
-    // Khởi tạo SDL_ttf
     if (TTF_Init() == -1) {
         std::cerr << "SDL_ttf initialization failed: " << TTF_GetError() << std::endl;
         return false;
     }
 
-    // Tạo cửa sổ
     gWindow = SDL_CreateWindow("Flappy Bird", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 640, 480, SDL_WINDOW_SHOWN);
     if (gWindow == nullptr) {
         std::cerr << "Window creation failed: " << SDL_GetError() << std::endl;
         return false;
     }
 
-    // Tạo renderer
     gRenderer = SDL_CreateRenderer(gWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
     if (gRenderer == nullptr) {
         std::cerr << "Renderer creation failed: " << SDL_GetError() << std::endl;
         return false;
     }
 
-    // Khởi tạo SDL_image
     int imgFlags = IMG_INIT_PNG;
     if (!(IMG_Init(imgFlags) & imgFlags)) {
         std::cerr << "SDL_image initialization failed: " << IMG_GetError() << std::endl;
         return false;
     }
 
-    // Tải phương tiện và font
     if (!loadMedia() || !loadFont()) {
         std::cerr << "Media loading failed!" << std::endl;
         return false;
@@ -115,13 +108,11 @@ bool FlappyBird::init() {
 
     std::srand(std::time(0));
 
-    // Tạo ống đầu tiên
     if (!generatePipePair()) {
         std::cerr << "Failed to generate pipes!" << std::endl;
         return false;
     }
 
-    // Khởi tạo điểm số và kỷ lục
     score = 0;
     highScore = 0;
 
@@ -138,7 +129,6 @@ bool FlappyBird::loadFont() {
 }
 
 bool FlappyBird::loadMedia() {
-    // Tải hình nền
     SDL_Surface* backgroundSurface = IMG_Load("img/bkground.png");
     if (backgroundSurface == nullptr) {
         std::cerr << "Failed to load background image: " << IMG_GetError() << std::endl;
@@ -152,7 +142,6 @@ bool FlappyBird::loadMedia() {
         return false;
     }
 
-    // Tải hình ảnh chim
     SDL_Surface* birdSurface = IMG_Load("img/bird.png");
     if (birdSurface == nullptr) {
         std::cerr << "Failed to load bird image: " << IMG_GetError() << std::endl;
@@ -166,7 +155,6 @@ bool FlappyBird::loadMedia() {
         return false;
     }
 
-    // Tải hình ảnh ống trên
     SDL_Surface* pipeUpSurface = IMG_Load("img/pipe_up.png");
     if (pipeUpSurface == nullptr) {
         std::cerr << "Failed to load pipe_up image: " << IMG_GetError() << std::endl;
@@ -180,7 +168,6 @@ bool FlappyBird::loadMedia() {
         return false;
     }
 
-    // Tải hình ảnh ống dưới
     SDL_Surface* pipeDownSurface = IMG_Load("img/pipe_down.png");
     if (pipeDownSurface == nullptr) {
         std::cerr << "Failed to load pipe_down image: " << IMG_GetError() << std::endl;
@@ -198,7 +185,6 @@ bool FlappyBird::loadMedia() {
 }
 
 void FlappyBird::close() {
-    // Giải phóng các texture
     SDL_DestroyTexture(gBackgroundTexture);
     SDL_DestroyTexture(gBirdTexture);
     SDL_DestroyTexture(gPipeUpTexture);
@@ -207,53 +193,43 @@ void FlappyBird::close() {
     SDL_DestroyTexture(playAgainTexture);
     SDL_DestroyTexture(quitTexture);
 
-    // Đóng font
     TTF_CloseFont(gFont);
 
-    // Giải phóng renderer và cửa sổ
     SDL_DestroyRenderer(gRenderer);
     SDL_DestroyWindow(gWindow);
 
-    // Dừng SDL, SDL_image và SDL_ttf
     IMG_Quit();
     TTF_Quit();
     SDL_Quit();
 }
 
 void FlappyBird::render() {
-    // Xóa màn hình
     SDL_RenderClear(gRenderer);
 
-    // Vẽ hình nền
     SDL_RenderCopy(gRenderer, gBackgroundTexture, nullptr, nullptr);
 
-    // Vẽ chim
     SDL_RenderCopy(gRenderer, gBirdTexture, nullptr, &gBirdRect);
 
-    // Vẽ các cặp ống
     for (const auto& pipePair : pipes) {
         SDL_RenderCopy(gRenderer, gPipeUpTexture, nullptr, &pipePair.upperRect);
         SDL_RenderCopy(gRenderer, gPipeDownTexture, nullptr, &pipePair.lowerRect);
     }
 
-    // Hiển thị màn hình game over nếu game kết thúc
     if (gameState == GAME_OVER) {
         showGameOverScreen();
         renderGameOverText();
-    } else if (gameState == PAUSED) { // Thêm điều kiện kiểm tra trạng thái PAUSED
-        showPauseScreen(); // Hiển thị nút "Press SPACE to Play"
+    } else if (gameState == PAUSED) {
+        showPauseScreen();
     }
 
-    // Hiển thị điểm số
     renderScore();
 
-    // Cập nhật màn hình
     SDL_RenderPresent(gRenderer);
 }
 
 void FlappyBird::renderGameOverText() {
     SDL_Color redColor = {255, 0, 0, 255};
-    TTF_Font* gameOverFont = TTF_OpenFont("font/Font.ttf", 50); // Chọn một kích thước phù hợp cho font
+    TTF_Font* gameOverFont = TTF_OpenFont("font/Font.ttf", 50);
     if (gameOverFont == nullptr) {
         std::cerr << "Failed to load font for game over text: " << TTF_GetError() << std::endl;
         return;
@@ -271,11 +247,8 @@ void FlappyBird::renderGameOverText() {
         TTF_CloseFont(gameOverFont);
         return;
     }
-    // Đặt vị trí và kích thước cho thông báo "Game Over"
     SDL_Rect gameOverRect = {320 - (gameOverSurface->w / 2), 100, gameOverSurface->w, gameOverSurface->h};
-    // Vẽ thông báo "Game Over" lên màn hình
     SDL_RenderCopy(gRenderer, gameOverTexture, nullptr, &gameOverRect);
-    // Giải phóng bộ nhớ đã cấp phát
     SDL_FreeSurface(gameOverSurface);
     SDL_DestroyTexture(gameOverTexture);
     TTF_CloseFont(gameOverFont);
@@ -288,75 +261,78 @@ void FlappyBird::showPauseScreen() {
 
     SDL_Rect pauseRect;
     pauseRect.x = 320 - (pauseSurface->w / 2);
-    pauseRect.y = 240;
+    pauseRect.y = 240 - (pauseSurface->h / 2);
     pauseRect.w = pauseSurface->w;
     pauseRect.h = pauseSurface->h;
 
     SDL_RenderCopy(gRenderer, pauseTexture, nullptr, &pauseRect);
-
     SDL_FreeSurface(pauseSurface);
     SDL_DestroyTexture(pauseTexture);
 }
 
 void FlappyBird::showGameOverScreen() {
-    SDL_Color redColor = {255, 0, 0, 255};
-
-    // Tạo surface cho nút Play Again
-    SDL_Surface* playAgainSurface = TTF_RenderText_Solid(gFont, "Play Again", redColor);
+    SDL_Color whiteColor = { 255, 255, 255, 255 };
+    SDL_Surface* playAgainSurface = TTF_RenderText_Solid(gFont, "Play Again", whiteColor);
     playAgainTexture = SDL_CreateTextureFromSurface(gRenderer, playAgainSurface);
+    playAgainRect = { 320 - (playAgainSurface->w / 2), 300, playAgainSurface->w, playAgainSurface->h };
     SDL_FreeSurface(playAgainSurface);
 
-    // Tạo surface cho nút Exit
-    SDL_Surface* exitSurface = TTF_RenderText_Solid(gFont, "Exit", redColor);
-    exitTexture = SDL_CreateTextureFromSurface(gRenderer, exitSurface);
-    SDL_FreeSurface(exitSurface);
-
-    // Đặt vị trí và kích thước cho nút Play Again
-    playAgainRect.x = 320 - 100;
-    playAgainRect.y = 240;
-    playAgainRect.w = 200;
-    playAgainRect.h = 50;
-
-    // Đặt vị trí và kích thước cho nút Exit
-    exitRect.x = 320 - 100;
-    exitRect.y = 300;
-    exitRect.w = 200;
-    exitRect.h = 50;
+    SDL_Surface* quitSurface = TTF_RenderText_Solid(gFont, "Quit", whiteColor);
+    quitTexture = SDL_CreateTextureFromSurface(gRenderer, quitSurface);
+    quitRect = { 320 - (quitSurface->w / 2), 350, quitSurface->w, quitSurface->h };
+    SDL_FreeSurface(quitSurface);
 
     SDL_RenderCopy(gRenderer, playAgainTexture, nullptr, &playAgainRect);
-    SDL_RenderCopy(gRenderer, exitTexture, nullptr, &exitRect);
+    SDL_RenderCopy(gRenderer, quitTexture, nullptr, &quitRect);
+}
+
+void FlappyBird::renderScore() {
+    SDL_Color whiteColor = { 255, 255, 255, 255 };
+    std::string scoreText = "Score: " + std::to_string(score);
+    SDL_Surface* scoreSurface = TTF_RenderText_Solid(gFont, scoreText.c_str(), whiteColor);
+    SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(gRenderer, scoreSurface);
+
+    SDL_Rect scoreRect;
+    scoreRect.x = 10;
+    scoreRect.y = 10;
+    scoreRect.w = scoreSurface->w;
+    scoreRect.h = scoreSurface->h;
+
+    SDL_RenderCopy(gRenderer, scoreTexture, nullptr, &scoreRect);
+    SDL_FreeSurface(scoreSurface);
+    SDL_DestroyTexture(scoreTexture);
 }
 
 void FlappyBird::handleEvents() {
     SDL_Event e;
-    while (SDL_PollEvent(&e)) {
+    while (SDL_PollEvent(&e) != 0) {
         if (e.type == SDL_QUIT) {
             quit = true;
         } else if (e.type == SDL_KEYDOWN) {
             if (e.key.keysym.sym == SDLK_SPACE) {
                 if (gameState == PAUSED) {
-                    gameState = RUNNING; // Bắt đầu trò chơi khi nhấn Space ở trạng thái PAUSED
-                } else if (gameState == RUNNING) {
-                    // Khi nhấn phím cách, chim bay lên
-                    gBirdRect.y -= 50;
-                }
-            } else if (e.key.keysym.sym == SDLK_RETURN) {
-                // Khi nhấn phím Enter, tạm dừng trò chơi
-                if (gameState == RUNNING) {
-                    gameState = PAUSED;
-                }
-            }
-        } else if (e.type == SDL_MOUSEBUTTONDOWN) {
-            int x, y;
-            SDL_GetMouseState(&x, &y);
-            if (gameState == GAME_OVER) {
-                if (x >= playAgainRect.x && x <= playAgainRect.x + playAgainRect.w && y >= playAgainRect.y && y <= playAgainRect.y + playAgainRect.h) {
                     gameState = RUNNING;
+                } else if (gameState == RUNNING) {
+                    gBirdRect.y -= 50;
+                } else if (gameState == GAME_OVER) {
+                    gameState = PAUSED;
                     gBirdRect.y = 200;
                     pipes.clear();
                     generatePipePair();
                     score = 0;
-                } else if (x >= exitRect.x && x <= exitRect.x + exitRect.w && y >= exitRect.y && y <= exitRect.y + exitRect.h) {
+                }
+            }
+        } else if (e.type == SDL_MOUSEBUTTONDOWN) {
+            int mouseX = e.button.x;
+            int mouseY = e.button.y;
+            if (gameState == GAME_OVER) {
+                if (mouseX >= playAgainRect.x && mouseX <= playAgainRect.x + playAgainRect.w && mouseY >= playAgainRect.y && mouseY <= playAgainRect.y + playAgainRect.h) {
+                    gameState = PAUSED;
+                    gBirdRect.y = 200;
+                    pipes.clear();
+                    generatePipePair();
+                    score = 0;
+                } else if (mouseX >= quitRect.x && mouseX <= quitRect.x + quitRect.w && mouseY >= quitRect.y && mouseY <= quitRect.y + quitRect.h) {
                     quit = true;
                 }
             }
@@ -366,40 +342,23 @@ void FlappyBird::handleEvents() {
 
 void FlappyBird::update() {
     if (gameState == RUNNING) {
-        // Tạo ống ngẫu nhiên sau một khoảng thời gian
-        if (pipes.empty() || pipes.back().upperRect.x < 300) {
-            generatePipePair();
-        }
-
-        // Cập nhật vị trí của các cặp ống
+        gBirdRect.y += gravity;
         for (auto& pipePair : pipes) {
             pipePair.upperRect.x -= 5;
             pipePair.lowerRect.x -= 5;
 
-            // Kiểm tra va chạm
-            if (checkCollision(pipePair.upperRect) || checkCollision(pipePair.lowerRect)) {
-                gameState = GAME_OVER;
-                if (score > highScore) {
-                    highScore = score;
-                }
-                return;
+            if (!pipePair.passed && pipePair.upperRect.x < gBirdRect.x) {
+                pipePair.passed = true;
+                score++;
             }
 
-            // Kiểm tra nếu chim vượt qua cặp ống và cặp ống chưa được đánh dấu là đã vượt qua
-            if (pipePair.upperRect.x + pipePair.upperRect.w < gBirdRect.x && !pipePair.passed) {
-                pipePair.passed = true;
-                updateScore(); // Tăng điểm
+            if (pipePair.upperRect.x + pipePair.upperRect.w < 0) {
+                pipes.erase(pipes.begin());
+                generatePipePair();
             }
         }
 
-        // Xóa các cặp ống đã đi qua màn hình
-        pipes.erase(std::remove_if(pipes.begin(), pipes.end(), [](const PipePair& pipePair) { return pipePair.upperRect.x + pipePair.upperRect.w < 0; }), pipes.end());
-
-        // Cập nhật vị trí của chim (rơi xuống do trọng lực)
-        gBirdRect.y += gravity;
-
-        // Nếu chim chạm đất hoặc bay quá cao, kết thúc trò chơi
-        if (gBirdRect.y + gBirdRect.h > 480 || gBirdRect.y < 0) {
+        if (checkCollision(gBirdRect)) {
             gameState = GAME_OVER;
             if (score > highScore) {
                 highScore = score;
@@ -409,57 +368,26 @@ void FlappyBird::update() {
 }
 
 bool FlappyBird::generatePipePair() {
-    int gapHeight = 150; // Khoảng cách giữa ống trên và ống dưới
-    int pipeWidth = 70; // Chiều rộng của ống
-    int minHeight = 50; // Chiều cao tối thiểu của ống trên hoặc ống dưới
-    int maxHeight = 480 - gapHeight - minHeight;
-
-    int upperPipeHeight = minHeight + rand() % (maxHeight - minHeight + 1);
-    int lowerPipeHeight = 480 - upperPipeHeight - gapHeight;
-
-    PipePair pipePair = {{640, 0, pipeWidth, upperPipeHeight}, {640, 480 - lowerPipeHeight, pipeWidth, lowerPipeHeight}, false};
-
-    pipes.push_back(pipePair);
-
+    PipePair newPair;
+    newPair.upperRect = { 640, 0, 50, 200 };
+    newPair.lowerRect = { 640, 300, 50, 200 };
+    newPair.passed = false;
+    pipes.push_back(newPair);
     return true;
 }
 
 bool FlappyBird::checkCollision(const SDL_Rect& rect) {
-    // Kiểm tra va chạm giữa chim và ống
-    return SDL_HasIntersection(&gBirdRect, &rect);
-}
+    for (const auto& pipePair : pipes) {
+        if (SDL_HasIntersection(&rect, &pipePair.upperRect) || SDL_HasIntersection(&rect, &pipePair.lowerRect)) {
+            return true;
+        }
+    }
 
-void FlappyBird::updateScore() {
-    score++; // Tăng điểm số
-}
+    if (rect.y <= 0 || rect.y + rect.h >= 480) {
+        return true;
+    }
 
-void FlappyBird::renderScore() {
-    // Chuyển điểm số hiện tại sang chuỗi
-    std::string scoreText = "Score: " + std::to_string(score);
-    std::string highScoreText = "High Score: " + std::to_string(highScore);
-
-    // Tạo surface cho điểm số hiện tại
-    SDL_Color whiteColor = {255, 255, 255, 255};
-    SDL_Surface* scoreSurface = TTF_RenderText_Solid(gFont, scoreText.c_str(), whiteColor);
-    SDL_Surface* highScoreSurface = TTF_RenderText_Solid(gFont, highScoreText.c_str(), whiteColor);
-
-    // Tạo texture từ surface
-    SDL_Texture* scoreTexture = SDL_CreateTextureFromSurface(gRenderer, scoreSurface);
-    SDL_Texture* highScoreTexture = SDL_CreateTextureFromSurface(gRenderer, highScoreSurface);
-
-    // Đặt vị trí và kích thước cho điểm số
-    SDL_Rect scoreRect = {10, 10, scoreSurface->w, scoreSurface->h};
-    SDL_Rect highScoreRect = {10, 40, highScoreSurface->w, highScoreSurface->h};
-
-    // Vẽ điểm số lên màn hình
-    SDL_RenderCopy(gRenderer, scoreTexture, nullptr, &scoreRect);
-    SDL_RenderCopy(gRenderer, highScoreTexture, nullptr, &highScoreRect);
-
-    // Giải phóng surface và texture
-    SDL_FreeSurface(scoreSurface);
-    SDL_FreeSurface(highScoreSurface);
-    SDL_DestroyTexture(scoreTexture);
-    SDL_DestroyTexture(highScoreTexture);
+    return false;
 }
 
 void FlappyBird::run() {
@@ -467,18 +395,16 @@ void FlappyBird::run() {
         handleEvents();
         update();
         render();
-        SDL_Delay(4); // Giới hạn tốc độ khung hình
+        SDL_Delay(16);
     }
 }
 
 int main(int argc, char* args[]) {
     FlappyBird game;
-
-    if (game.init()) {
-        game.run();
-    } else {
-        std::cerr << "Failed to initialize the game." << std::endl;
+    if (!game.init()) {
+        std::cerr << "Failed to initialize!" << std::endl;
+        return -1;
     }
-
+    game.run();
     return 0;
 }
