@@ -12,11 +12,11 @@ K68N - UET - 2324II_INT2215_21 - Lap trinh nang cao
 
 Third party tools:
 
-[https://github.com/libsdlorg/SDL/releases/tag/prerelease-2.29.2](https://github.com/libsdl-org/SDL/releases/tag/prerelease-2.29.2)
+[https://github.com/libsdlorg/SDL/releases/tag/prerelease-2.29.2](https://github.com/libsdl-org/SDL/releases/tag/prerelease-2.29.2) (SDL2)
 
-[https://github.com/libsdlorg/SDL_image/releases/tag/release-2.8.2](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.8.2)
+[https://github.com/libsdlorg/SDL_image/releases/tag/release-2.8.2](https://github.com/libsdl-org/SDL_image/releases/tag/release-2.8.2)(SDL_image)
 
-[https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.22.0](https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.22.0)
+[https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.22.0](https://github.com/libsdl-org/SDL_ttf/releases/tag/release-2.22.0)(SDL_ttf)
 
 CREDITS :
 https://wallpapers.com/flappy-bird-background
