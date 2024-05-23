@@ -5,7 +5,7 @@ Full Name : Nguyễn Đức Hoan
 
 ID: 23020607
 
-K68N - UET - 2324II_INT2215_21 - Lap trinh nang cao
+K68N - UET - 2324II_INT2215_21 - Lập trình nâng cao
 
 ![image](https://github.com/DucHoan23020607/Flappy-Bird/assets/160832222/0a107fc5-cfbf-4d9c-aa43-252109ef52de)
 ![image](https://github.com/DucHoan23020607/Flappy-Bird/assets/160832222/3a63119b-16ff-4afd-8a89-7345949f15ef)
