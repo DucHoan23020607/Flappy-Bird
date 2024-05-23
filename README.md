@@ -21,6 +21,6 @@ K68N - UET - 2324II_INT2215_21 - Lap trinh nang cao
 
 ## CREDITS :
 
-https://wallpapers.com/flappy-bird-background
+[image](https://wallpapers.com/flappy-bird-background)
 
-https://www.fontchu.com/games.htm
+[font](https://www.fontchu.com/games.htm)
