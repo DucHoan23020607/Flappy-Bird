@@ -33,3 +33,7 @@
 - b3 : In your project, right-click and select 'Open in Terminal', then paste the command line:
 
          ```git clone https://github.com/DucHoan23020607/Flappy-Bird```
+
+##knowledge:
+- [chat GPT](https://chatgpt.com/)
+- [claude ai](https://claude.ai/chat/8bd2d57a-7748-400a-8a02-b3bd785f6e76)
