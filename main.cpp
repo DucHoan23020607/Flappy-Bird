@@ -8,6 +8,8 @@ public:
     FlappyBird();
     ~FlappyBird();
     enum GameState { RUNNING, GAME_OVER, PAUSED };
+    bool loadHighScore();
+    void saveHighScore();
     bool init();
     void run();
 
@@ -113,8 +115,11 @@ bool FlappyBird::init() {
         return false;
     }
 
+    if (!loadHighScore()) {
+        std::cerr << "Failed to load high score!" << std::endl;
+    }
+
     score = 0;
-    highScore = 0;
 
     return true;
 }
@@ -344,6 +349,7 @@ void FlappyBird::update() {
                gameState = GAME_OVER;
                if (score > highScore) {
                    highScore = score;
+                   saveHighScore(); 
                }
                return;
            }
@@ -362,6 +368,7 @@ void FlappyBird::update() {
            gameState = GAME_OVER;
            if (score > highScore) {
                highScore = score;
+               saveHighScore();  
            }
        }
    }
@@ -423,10 +430,29 @@ void FlappyBird::run() {
    }
 }
 
+bool FlappyBird::loadHighScore() {
+    std::ifstream file("highscore.txt");
+    if (file.is_open()) {
+        file >> highScore;
+        file.close();
+        return true;
+    }
+    return false;
+}
+
+void FlappyBird::saveHighScore() {
+    std::ofstream file("highscore.txt");
+    if (file.is_open()) {
+        file << highScore;
+        file.close();
+    }
+}
+
 int main(int argc, char* args[]) {
    FlappyBird game;
 
    if (game.init()) {
+       game.loadHighScore(); 
        game.run();
    } else {
        std::cerr << "Failed to initialize the game." << std::endl;
