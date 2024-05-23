@@ -61,7 +61,7 @@ private:
     void renderScore();
 };
 
-FlappyBird::FlappyBird() : gWindow(nullptr), gRenderer(nullptr), gBackgroundTexture(nullptr), gBirdTexture(nullptr), gPipeUpTexture(nullptr), gPipeDownTexture(nullptr), gFont(nullptr), gTextTexture(nullptr), gravity(2.5), quit(false), gameState(PAUSED), score(0), highScore(0) {
+FlappyBird::FlappyBird() : gWindow(nullptr), gRenderer(nullptr), gBackgroundTexture(nullptr), gBirdTexture(nullptr), gPipeUpTexture(nullptr), gPipeDownTexture(nullptr), gFont(nullptr), gTextTexture(nullptr), gravity(3.5), quit(false), gameState(PAUSED), score(0), highScore(0) {
     gBirdRect.x = 100;
     gBirdRect.y = 200;
     gBirdRect.w = 50;
@@ -305,7 +305,7 @@ void FlappyBird::handleEvents() {
                if (gameState == PAUSED) {
                    gameState = RUNNING;
                } else if (gameState == RUNNING) {
-                   gBirdRect.y -= 50;
+                   gBirdRect.y -= 70;
                }
            } else if (e.key.keysym.sym == SDLK_RETURN) {
                if (gameState == RUNNING) {
@@ -419,7 +419,7 @@ void FlappyBird::run() {
        handleEvents();
        update();
        render();
-       SDL_Delay(2);
+       SDL_Delay(6);
    }
 }
 
