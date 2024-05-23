@@ -31,4 +31,5 @@
 - b1 : you may need the [Code::Blocks](https://www.codeblocks.org/downloads/).
 - b2 : you can add SDL2.dll, SDL2_image.dll, SDL2_ttf.dll in your project.
 - b3 : In your project, right-click and select 'Open in Terminal', then paste the command line:
-```git clone https://github.com/DucHoan23020607/Flappy-Bird```
+
+ ```git clone https://github.com/DucHoan23020607/Flappy-Bird```
